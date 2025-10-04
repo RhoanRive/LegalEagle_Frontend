@@ -1,1 +1,0 @@
-const apiUrl = "https://legal-eagle.onrender.com/api/gemini";
