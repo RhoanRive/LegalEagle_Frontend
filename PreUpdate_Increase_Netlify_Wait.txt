@@ -262,33 +262,22 @@
             { title: "Requirements for a Valid Marriage", fullText: "The Marriage Act 25 of 1961 requires that for a marriage to be valid, it must be solemnised by a competent marriage officer in the presence of the parties and at least two competent witnesses." }
         ];
 
-        
         // Gemini API Call
         async function callGemini(prompt) {
-            const apiUrl = "https://api.mzansilegal.co.za/api/gemini";
-            const payload = { prompt };
+            try {
+                const response = await fetch("https://legal-eagle.onrender.com/api/gemini", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
 
-            for (let i = 0; i < 2; i++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        return result?.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini.";
-                    }
-                } catch (err) {
-                    console.warn(`Attempt ${i + 1} failed, retrying...`);
-                    await new Promise(r => setTimeout(r, 2000)); // wait 2s before retry
-                }
+                const result = await response.json();
+                return result?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                return "Connection error.";
             }
-
-            return "Connection error — backend may still be waking up.";
         }
-
 
 
         async function getSimpleExplanation(lawText) {
